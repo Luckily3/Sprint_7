@@ -44,6 +44,11 @@ public class CourierCreateTest {
   public void createCourier() {
     ValidatableResponse createResponse = courierClient.requestCreateCourier(courier);
     createResponse.assertThat().statusCode(HttpStatus.SC_CREATED).body("ok", is(true));
+
+    ValidatableResponse loginResponse = courierClient.requestCourierLogin((courier));
+    courierId = loginResponse.extract().path("id").toString();
+
+    loginResponse.assertThat().statusCode(HttpStatus.SC_OK).body("id", notNullValue());
   }
 
   @Test
@@ -99,19 +104,6 @@ public class CourierCreateTest {
     ValidatableResponse createResponse = courierClient.requestCreateCourier(courierWithNullPassword);
     createResponse.assertThat().statusCode(HttpStatus.SC_BAD_REQUEST).body("message",
             is("Недостаточно данных для создания учетной записи"));
-  }
-
-
-  @Test
-  @DisplayName("Логин курьера: api/v1/courier/login")
-  @Description("Проверка ожидаемого результата: statusCode и body")
-  public void courierLogin() {
-    courierClient.requestCreateCourier(courier);
-
-    ValidatableResponse loginResponse = courierClient.requestCourierLogin((courier));
-    courierId = loginResponse.extract().path("id").toString();
-
-    loginResponse.assertThat().statusCode(HttpStatus.SC_OK).body("id", notNullValue());
   }
 
   @After
